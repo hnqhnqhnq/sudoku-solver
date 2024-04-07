@@ -82,15 +82,50 @@ function initSudoku(sudoku) {
 }
 
 function solveSudoku(sudoku, index) {
-    
+    if (index == 81)
+        return true;
+
+    const i = Math.floor(index / 27);
+    const j = Math.floor((index % 9) / 3);
+    const k = Math.floor(index / 9) % 3;
+    const l = index % 3;
+
+    if (sudoku[i][j][k][l] !== 0)
+        return solveSudoku(sudoku, index + 1);
+
+    for (let value = 1; value <= 9; value++) {
+        if (verifySquare(sudoku, i , j, value) && verifyRow(sudoku, i, k, value) && verifyColumn(sudoku, j, l, value)) {
+            sudoku[i][j][k][l] = value;
+
+            if(solveSudoku(sudoku, index + 1))
+                return true;
+
+            sudoku[i][j][k][l] = 0;
+        }
+    }
+
+    return false;
 }
 
+function putValuesOnGrid(sudoku) {
+    let index = 0;
 
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            for (let k = 0; k < 3; k++) {
+                for (let l = 0; l < 3; l++) {
+                    boxes[index].textContent = sudoku[i][j][k][l];
+                    index++;
+                }
+            }
+        }
+    }
+}
 
 function sudokuPrep() {
     let sudoku = [];
 
     initSudoku(sudoku);
     solveSudoku(sudoku, 0);
-    console.log(sudoku);
+    putValuesOnGrid(sudoku);
 }
